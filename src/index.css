@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color: #1a1a1a;
+    background-color: #ffffff;
+    scrollbar-width: thin;
+    scrollbar-color: #f97316 #f8f8f8;
+  }
+
+  /* Minimalist orange custom scrollbar for WebKit browsers */
+  ::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f8f8f8;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #f97316;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #ea580c;
+  }
+
+  /* Accessible focus indicators per DESIGN.md specifications */
+  :focus-visible {
+    outline: 2px solid #e21818;
+    outline-offset: 2px;
+  }
+
+  /* Support for users with reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Minimal card elevation shadow */
+  .shadow-card-hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Character-by-character cascading light wave from dark to bright to dark */
+  .animate-char-wave {
+    display: inline-block;
+    color: #18181b;
+    animation: char-cascade-wave 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    animation-delay: calc(var(--char-idx, 0) * 0.075s);
+    will-change: color, text-shadow;
+  }
+}
+
+@keyframes char-cascade-wave {
+  0% {
+    color: #18181b;
+    text-shadow: none;
+  }
+  25% {
+    color: #ea580c;
+    text-shadow: 0 0 10px rgba(234, 88, 12, 0.45), 0 0 20px rgba(245, 158, 11, 0.25);
+  }
+  55% {
+    color: #f97316;
+    text-shadow: 0 0 12px rgba(249, 115, 22, 0.45), 0 0 22px rgba(234, 88, 12, 0.25);
+  }
+  80% {
+    color: #18181b;
+    text-shadow: none;
+  }
+  100% {
+    color: #18181b;
+    text-shadow: none;
+  }
+}
+
+
