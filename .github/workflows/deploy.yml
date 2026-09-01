@@ -37,6 +37,7 @@ jobs:
 
       - name: Build project
         env:
+          GITHUB_PAGES: 'true'
           VITE_WEB3FORMS_ACCESS_KEY: ${{ secrets.VITE_WEB3FORMS_ACCESS_KEY }}
         run: npm run build
 

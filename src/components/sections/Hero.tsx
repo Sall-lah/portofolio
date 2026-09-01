@@ -108,7 +108,7 @@ export const Hero: React.FC = () => {
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
             <div className="relative w-full max-w-[300px] sm:max-w-[340px] lg:max-w-[380px] aspect-[4/5] sm:aspect-square rounded-2xl overflow-hidden border border-border bg-surface shadow-card group">
               <img
-                src="/owner_image.jpeg"
+                src={`${import.meta.env.BASE_URL}owner_image.jpeg`}
                 alt={siteConfig.name}
                 loading="eager"
                 className="w-full h-full object-cover object-top transition-transform duration-slow ease-brand group-hover:scale-[1.02]"

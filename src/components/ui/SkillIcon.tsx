@@ -71,7 +71,7 @@ export const SkillIcon: React.FC<SkillIconProps> = ({
 }) => {
   const normalized = name.toLowerCase().trim();
   const iconFile = ICON_MAP[normalized] || `${name}.svg`;
-  const iconPath = `/icon/${iconFile}`;
+  const iconPath = `${import.meta.env.BASE_URL}icon/${iconFile}`;
 
   return (
     <img
