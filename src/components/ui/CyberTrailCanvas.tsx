@@ -32,10 +32,19 @@ const CELL_HEIGHT = 28;
 const PROXIMITY_RADIUS = 260;
 
 /**
- * Styling for the baseline idle monospace dot matrix.
- * Slate-500 with 0.52 opacity provides clear, intentional architectural structure against pure white.
+ * Shared baseline opacity for both idle monospace dots and the perimeter minimum of cipher characters.
+ *
+ * Why:
+ * Unifying the floor opacity prevents abrupt brightness dips when dots transform into letters,
+ * and eliminates pop-in artifacts when active characters dissolve back into the idle dot matrix.
  */
-const IDLE_DOT_COLOR = 'rgba(100, 116, 139, 0.52)';
+const BASE_DOT_OPACITY = 0.52;
+
+/**
+ * Styling for the baseline idle monospace dot matrix.
+ * Slate-500 with BASE_DOT_OPACITY provides clear, intentional architectural structure against pure white.
+ */
+const IDLE_DOT_COLOR = `rgba(100, 116, 139, ${BASE_DOT_OPACITY})`;
 
 /**
  * State tracked per individual grid cell for continuous live cipher scrambling.
@@ -74,9 +83,11 @@ export interface CyberTrailCanvasProps {
  * 1. Continuous Live Cipher: Characters in proximity never settle on static text,
  *    simulating an active real-time cryptographic decryption stream.
  * 2. Monospace dot grid provides architectural structure when idle.
- * 3. Bounding-box spatial pruning limits per-frame math to ~300 cells instead of the whole screen.
- * 4. Self-sleeping RAF loop pauses when cursor leaves the hero, maintaining 0% idle CPU.
- * 5. Respects prefers-reduced-motion by rendering a peaceful static dot matrix.
+ * 3. Shared baseline opacity (BASE_DOT_OPACITY) eliminates brightness dips and visual pop-in
+ *    by matching the idle dot opacity with the minimum floor of animated cipher characters.
+ * 4. Bounding-box spatial pruning limits per-frame math to ~300 cells instead of the whole screen.
+ * 5. Self-sleeping RAF loop pauses when cursor leaves the hero, maintaining 0% idle CPU.
+ * 6. Respects prefers-reduced-motion by rendering a peaceful static dot matrix.
  *
  * @param props Component properties containing optional containerRef and className
  * @returns Absolute-positioned HTML5 canvas JSX element
@@ -244,7 +255,7 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
             // Cell outside proximity radius: dissolve back toward dot baseline
             if (cell.revealProgress > 0) {
               cell.revealProgress += (0 - cell.revealProgress) * 0.18;
-              if (cell.revealProgress < 0.02) {
+              if (cell.revealProgress < 0.01) {
                 cell.revealProgress = 0;
                 cell.displayChar = '·';
               }
@@ -253,23 +264,26 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
           }
 
           // Rendering based on reveal progress
-          if (cell.revealProgress > 0.04 && cell.displayChar !== ' ') {
+          if (cell.revealProgress > 0.02 && cell.displayChar !== ' ') {
             // In proximity: Render live scrambling cipher character
             ctx.font = '600 13px "JetBrains Mono", "Fira Code", monospace';
+
+            // Scale opacity smoothly from BASE_DOT_OPACITY at perimeter up to 1.0 at center
+            const animOpacity = BASE_DOT_OPACITY + (1 - BASE_DOT_OPACITY) * cell.revealProgress;
 
             if (dist < 70) {
               // Center zone: High contrast charcoal with occasional brand red
               if (cell.isAccent) {
-                ctx.fillStyle = `rgba(226, 24, 24, ${Math.min(1, cell.revealProgress * 1.25)})`;
+                ctx.fillStyle = `rgba(226, 24, 24, ${Math.min(1, animOpacity * 1.1)})`;
               } else {
-                ctx.fillStyle = `rgba(26, 26, 26, ${Math.min(1, cell.revealProgress * 1.2)})`;
+                ctx.fillStyle = `rgba(26, 26, 26, ${Math.min(1, animOpacity * 1.1)})`;
               }
             } else {
-              // Mid/outer zone: Refined slate fading smoothly toward perimeter
+              // Mid/outer zone: Refined slate fading smoothly toward perimeter minimum
               if (cell.isAccent) {
-                ctx.fillStyle = `rgba(226, 24, 24, ${cell.revealProgress * 0.85})`;
+                ctx.fillStyle = `rgba(226, 24, 24, ${animOpacity})`;
               } else {
-                ctx.fillStyle = `rgba(51, 65, 85, ${cell.revealProgress * 0.85})`;
+                ctx.fillStyle = `rgba(51, 65, 85, ${animOpacity})`;
               }
             }
 
