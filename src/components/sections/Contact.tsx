@@ -99,11 +99,8 @@ export const Contact: React.FC = () => {
           {/* Contact Introduction Column */}
           <div className="lg:col-span-5 space-y-6">
             <div>
-              <div className="text-[13px] sm:text-[14px] font-mono font-medium tracking-wide uppercase text-primary mb-2">
-                Connect & Inquire
-              </div>
-              <h2 className="text-[30px] sm:text-[36px] font-bold text-brand-text tracking-[-0.02em]">
-                Let's Discuss an Opportunity
+              <h2 className="text-[30px] sm:text-[36px] font-bold text-primary tracking-[-0.02em]">
+                Contact
               </h2>
             </div>
 

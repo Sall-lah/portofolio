@@ -14,11 +14,8 @@ export const Projects: React.FC = () => {
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Section Heading matching DESIGN.md typography hierarchy */}
         <div className="max-w-3xl mb-10 sm:mb-12">
-          <div className="text-[13px] sm:text-[14px] font-mono font-medium tracking-wide uppercase text-primary mb-2">
-            Past Projects
-          </div>
-          <h2 className="text-[30px] sm:text-[36px] font-bold text-brand-text tracking-[-0.02em]">
-            Featured Engineering & Systems Work
+          <h2 className="text-[30px] sm:text-[36px] font-bold text-primary tracking-[-0.02em]">
+            Projects
           </h2>
         </div>
 

@@ -108,10 +108,14 @@ export interface SiteConfig {
   name: string;
   /** Professional title / role */
   role: string;
-  /** Hero headline */
+  /** Core driving motivation statement prominently displayed in hero */
+  motivation: string;
+  /** Hero headline (legacy fallback / concise value proposition) */
   headline: string;
   /** Concise developer summary */
   bio: string;
+  /** Structured multi-paragraph narrative for the dedicated About story */
+  aboutStory: string[];
   /** Contact email */
   email: string;
   /** Contact phone number */

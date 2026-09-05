@@ -19,7 +19,7 @@ export interface ProjectCardProps {
  */
 export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   return (
-    <article className="group bg-white rounded-xl border border-border overflow-hidden transition-all duration-base hover:shadow-elevated hover:border-primary/40 flex flex-col lg:flex-row lg:h-[440px]">
+    <article className="bg-white rounded-xl border border-border overflow-hidden flex flex-col lg:flex-row lg:h-[440px]">
       {/* Preview Column (Left on desktop) */}
       <div className="lg:w-1/2 flex items-stretch h-[240px] sm:h-[280px] lg:h-full overflow-hidden">
         {project.screenshot ? (
@@ -33,7 +33,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
       <div className="lg:w-1/2 p-6 sm:p-8 md:p-9 flex flex-col justify-between h-full space-y-5">
         <div className="space-y-3 sm:space-y-3.5">
           <div>
-            <h3 className="text-[22px] sm:text-[26px] font-bold text-brand-text tracking-tight group-hover:text-primary transition-colors duration-fast">
+            <h3 className="text-[22px] sm:text-[26px] font-bold text-brand-text tracking-tight">
               {project.title}
             </h3>
           </div>
