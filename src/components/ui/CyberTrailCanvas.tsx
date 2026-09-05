@@ -1,4 +1,9 @@
 import React, { useEffect, useRef } from 'react';
+import {
+  calculateWakeInfluence,
+  getTrailBoundingBox,
+  TrailPoint,
+} from '../../utils/wakeTrail';
 
 /**
  * Cipher symbols used for the continuous live decryption stream.
@@ -26,10 +31,20 @@ const CELL_WIDTH = 20;
 const CELL_HEIGHT = 28;
 
 /**
- * Generous proximity interaction radius around the cursor.
- * Allows full phrases and words to be comfortably read without visual cramping.
+ * Optimized proximity interaction radius at the head of the water wake.
+ * Provides a focused 180px reach (360px diameter) directly responding to pointer trajectory.
  */
-const PROXIMITY_RADIUS = 260;
+const PROXIMITY_RADIUS = 180;
+
+/**
+ * Minimum tapered radius at the tail of the decaying wake.
+ */
+const TAIL_RADIUS = 36;
+
+/**
+ * Lifespan of pointer wake disturbance in milliseconds before complete evaporation.
+ */
+const TRAIL_LIFESPAN = 800;
 
 /**
  * Shared baseline opacity for both idle monospace dots and the perimeter minimum of cipher characters.
@@ -76,17 +91,17 @@ export interface CyberTrailCanvasProps {
 
 /**
  * High-performance HTML5 Canvas component that renders a monospace dot matrix (`·`)
- * across the hero background, transforming dots into a continuous, living cipher stream
- * that actively scrambles and mutates as long as the cursor is nearby.
+ * across the hero background, transforming dots into an organic, motion-driven water wake
+ * that hugs cursor trajectory when moving and gently dissolves to still dots when stationary.
  *
  * Why:
- * 1. Continuous Live Cipher: Characters in proximity never settle on static text,
- *    simulating an active real-time cryptographic decryption stream.
- * 2. Monospace dot grid provides architectural structure when idle.
- * 3. Shared baseline opacity (BASE_DOT_OPACITY) eliminates brightness dips and visual pop-in
- *    by matching the idle dot opacity with the minimum floor of animated cipher characters.
- * 4. Bounding-box spatial pruning limits per-frame math to ~300 cells instead of the whole screen.
- * 5. Self-sleeping RAF loop pauses when cursor leaves the hero, maintaining 0% idle CPU.
+ * 1. Motion-Driven Water Wake: Cells activate based on movement trajectory and velocity,
+ *    simulating fluid displacement that trails behind the cursor.
+ * 2. Gentle Idle Dissolution: When the cursor pauses or stops moving, existing disturbances
+ *    smoothly evaporate over ~800ms back into the calm dot matrix.
+ * 3. 180px Proximity Radius: Reduced from 260px to provide a balanced, focused field of view.
+ * 4. Bounding-box spatial pruning limits per-frame calculations to cells within the active wake path.
+ * 5. Self-sleeping RAF loop pauses automatically when all disturbances settle, maintaining 0% idle CPU.
  * 6. Respects prefers-reduced-motion by rendering a peaceful static dot matrix.
  *
  * @param props Component properties containing optional containerRef and className
@@ -119,9 +134,9 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
 
     let animationFrameId: number | null = null;
     let isLoopRunning = false;
-    let isPointerActive = false;
-    let pointerX = -9999;
-    let pointerY = -9999;
+
+    // Chronological buffer of recent pointer movement points
+    let trailPoints: TrailPoint[] = [];
 
     let width = 0;
     let height = 0;
@@ -196,10 +211,16 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
 
     /**
      * Main canvas rendering loop.
-     * Computes proximity falloff, runs continuous cipher mutations, and renders dots or letters.
-     * Automatically suspends itself when pointer leaves and cells settle to preserve CPU.
+     * Computes water wake influence along the pointer trail, executes live cipher mutations,
+     * and softly dissolves cells back into dots when movement stops.
+     * Automatically suspends itself when all wake disturbances settle, maintaining 0% idle CPU.
      */
     function renderFrame() {
+      const now = performance.now();
+
+      // Prune expired trail points older than TRAIL_LIFESPAN
+      trailPoints = trailPoints.filter((p) => now - p.time < TRAIL_LIFESPAN);
+
       ctx.save();
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, width, height);
@@ -207,32 +228,49 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      let hasActiveTransitions = false;
+      // Compute spatial bounding box for the active wake
+      const bbox = getTrailBoundingBox(
+        trailPoints,
+        PROXIMITY_RADIUS,
+        cols,
+        rows,
+        offsetX,
+        offsetY,
+        CELL_WIDTH,
+        CELL_HEIGHT
+      );
 
-      // Spatial pruning bounding box for proximity checks
-      const minCol = Math.max(0, Math.floor((pointerX - PROXIMITY_RADIUS - offsetX) / CELL_WIDTH));
-      const maxCol = Math.min(cols - 1, Math.ceil((pointerX + PROXIMITY_RADIUS - offsetX) / CELL_WIDTH));
-      const minRow = Math.max(0, Math.floor((pointerY - PROXIMITY_RADIUS - offsetY) / CELL_HEIGHT));
-      const maxRow = Math.min(rows - 1, Math.ceil((pointerY + PROXIMITY_RADIUS - offsetY) / CELL_HEIGHT));
+      let activeTransitionsCount = 0;
 
       for (let r = 0; r < rows; r++) {
         const y = offsetY + r * CELL_HEIGHT;
-        const isRowInBounds = isPointerActive && r >= minRow && r <= maxRow;
+        const isRowInBBox = bbox !== null && r >= bbox.minRow && r <= bbox.maxRow;
 
         for (let c = 0; c < cols; c++) {
           const x = offsetX + c * CELL_WIDTH;
           const cell = grid[r][c];
 
+          let targetReveal = 0;
           let dist = Infinity;
           let isInside = false;
 
-          if (isRowInBounds && c >= minCol && c <= maxCol) {
-            dist = Math.hypot(x - pointerX, y - pointerY);
-            isInside = dist <= PROXIMITY_RADIUS;
+          if (isRowInBBox && bbox !== null && c >= bbox.minCol && c <= bbox.maxCol) {
+            const wake = calculateWakeInfluence(
+              x,
+              y,
+              trailPoints,
+              now,
+              PROXIMITY_RADIUS,
+              TAIL_RADIUS,
+              TRAIL_LIFESPAN
+            );
+            targetReveal = wake.influence;
+            dist = wake.dist;
+            isInside = wake.isInside;
           }
 
-          if (isInside) {
-            // Live continuous cipher stream: mutate glyphs at a relaxed, rhythmic pace
+          if (isInside && targetReveal > 0.04) {
+            // Live continuous cipher stream in active wake
             cell.mutationCountdown--;
             if (cell.mutationCountdown <= 0) {
               // 15% chance to momentarily flash the true target character, 85% random cipher glyph
@@ -241,37 +279,35 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
               } else {
                 cell.displayChar = getRandomCipherGlyph();
               }
-              // Reduced mutation rate: center-most cells mutate every 12–18 frames (~200ms–300ms),
-              // perimeter cells mutate more gently every 20–30 frames (~330ms–500ms).
-              const cycleSpeed = dist < 90 ? 12 : 20;
+              const cycleSpeed = dist < 70 ? 12 : 20;
               cell.mutationCountdown = Math.floor(Math.random() * 8) + cycleSpeed;
             }
 
-            // Target reveal based on distance falloff
-            const targetReveal = Math.max(0, 1 - dist / PROXIMITY_RADIUS);
-            cell.revealProgress += (targetReveal - cell.revealProgress) * 0.35;
-            hasActiveTransitions = true;
+            // Smooth approach toward target reveal
+            cell.revealProgress += (targetReveal - cell.revealProgress) * 0.28;
+            activeTransitionsCount++;
           } else {
-            // Cell outside proximity radius: dissolve back toward dot baseline
+            // Outside active wake or wake dissipating: gentle dissolution toward baseline dot
             if (cell.revealProgress > 0) {
-              cell.revealProgress += (0 - cell.revealProgress) * 0.18;
-              if (cell.revealProgress < 0.01) {
+              cell.revealProgress += (0 - cell.revealProgress) * 0.12;
+              if (cell.revealProgress < 0.005) {
                 cell.revealProgress = 0;
                 cell.displayChar = '·';
+              } else {
+                activeTransitionsCount++;
               }
-              hasActiveTransitions = true;
             }
           }
 
-          // Rendering based on reveal progress
+          // Render cell based on reveal progress
           if (cell.revealProgress > 0.02 && cell.displayChar !== ' ') {
-            // In proximity: Render live scrambling cipher character
+            // In wake: Render scrambling cipher character
             ctx.font = '600 13px "JetBrains Mono", "Fira Code", monospace';
 
             // Scale opacity smoothly from BASE_DOT_OPACITY at perimeter up to 1.0 at center
             const animOpacity = BASE_DOT_OPACITY + (1 - BASE_DOT_OPACITY) * cell.revealProgress;
 
-            if (dist < 70) {
+            if (dist < 60) {
               // Center zone: High contrast charcoal with occasional brand red
               if (cell.isAccent) {
                 ctx.fillStyle = `rgba(226, 24, 24, ${Math.min(1, animOpacity * 1.1)})`;
@@ -279,7 +315,7 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
                 ctx.fillStyle = `rgba(26, 26, 26, ${Math.min(1, animOpacity * 1.1)})`;
               }
             } else {
-              // Mid/outer zone: Refined slate fading smoothly toward perimeter minimum
+              // Mid/outer wake zone: Refined slate fading smoothly toward perimeter minimum
               if (cell.isAccent) {
                 ctx.fillStyle = `rgba(226, 24, 24, ${animOpacity})`;
               } else {
@@ -299,8 +335,8 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
 
       ctx.restore();
 
-      // Continue animation loop if transitions are active or pointer is active in hero
-      if (hasActiveTransitions || isPointerActive) {
+      // Continue animation loop if trail points exist or cells are still dissolving
+      if (trailPoints.length > 0 || activeTransitionsCount > 0) {
         animationFrameId = requestAnimationFrame(renderFrame);
       } else {
         isLoopRunning = false;
@@ -347,18 +383,30 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
       const y = e.clientY - rect.top;
 
       if (x < 0 || x > rect.width || y < 0 || y > rect.height) {
-        isPointerActive = false;
         return;
       }
 
-      isPointerActive = true;
-      pointerX = x;
-      pointerY = y;
+      const now = performance.now();
+      const lastPoint = trailPoints[trailPoints.length - 1];
+
+      // Append new point if pointer moved at least 4px or >= 20ms elapsed
+      if (
+        !lastPoint ||
+        Math.hypot(x - lastPoint.x, y - lastPoint.y) >= 4 ||
+        now - lastPoint.time >= 20
+      ) {
+        trailPoints.push({ x, y, time: now });
+        // Cap buffer length to prevent memory churn
+        if (trailPoints.length > 50) {
+          trailPoints.shift();
+        }
+      }
+
       wakeLoop();
     }
 
     function handlePointerLeave() {
-      isPointerActive = false;
+      // When cursor leaves hero, allow existing wake to dissolve gently
       wakeLoop();
     }
 
@@ -374,8 +422,12 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
       };
     }
 
-    targetElement.addEventListener('pointermove', handlePointerMove as EventListener, { passive: true });
-    targetElement.addEventListener('pointerdown', handlePointerMove as EventListener, { passive: true });
+    targetElement.addEventListener('pointermove', handlePointerMove as EventListener, {
+      passive: true,
+    });
+    targetElement.addEventListener('pointerdown', handlePointerMove as EventListener, {
+      passive: true,
+    });
     targetElement.addEventListener('pointerleave', handlePointerLeave);
 
     return () => {
