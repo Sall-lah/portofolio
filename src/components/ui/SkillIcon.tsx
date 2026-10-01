@@ -48,7 +48,6 @@ const ICON_MAP: Record<string, string> = {
   'html5': 'HTML5.svg',
   'css': 'CSS3.svg',
   'css3': 'CSS3.svg',
-  'anaconda': 'Anaconda.svg',
   'mysql': 'MySQL.svg',
   'postgresql': 'PostgresSQL.svg',
   'postgres': 'PostgresSQL.svg',

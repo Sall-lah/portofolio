@@ -36,7 +36,6 @@ export const skillCategories: SkillCategory[] = [
       'MySQL',
       'Redis',
       'Kafka',
-      'Anaconda',
     ],
   },
   {
