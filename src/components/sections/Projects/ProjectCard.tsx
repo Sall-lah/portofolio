@@ -1,7 +1,7 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
-import { GithubIcon } from '../ui/Icons';
-import { Project } from '../../types';
+import { GithubIcon } from '../../ui/Icons';
+import { Project } from '../../../types';
 import { ScreenshotPreviewFrame } from './ScreenshotPreviewFrame';
 import { TerminalPreviewFrame } from './TerminalPreviewFrame';
 
@@ -11,8 +11,8 @@ export interface ProjectCardProps {
 }
 
 /**
- * Expansive, high-impact project feature card supporting both Direct-Access Web Apps and Source-Only CLI/Libraries.
- * Uses static media preview frames (zero hover zoom) while omitting text-heavy highlights and status badges.
+ * Project showcase card supporting both Direct-Access Web Apps and Source-Only CLI/Libraries.
+ * Why: Renders static media previews with clear call-to-actions, omitting zoom effects for grounded presentation.
  *
  * @param props - Project model item (discriminated by kind)
  * @returns Project card JSX element
@@ -20,7 +20,6 @@ export interface ProjectCardProps {
 export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   return (
     <article className="bg-white rounded-xl border border-border overflow-hidden flex flex-col lg:flex-row lg:h-[440px]">
-      {/* Preview Column (Left on desktop) */}
       <div className="lg:w-1/2 flex items-stretch h-[240px] sm:h-[280px] lg:h-full overflow-hidden">
         {project.screenshot ? (
           <ScreenshotPreviewFrame screenshot={project.screenshot} title={project.title} />
@@ -29,7 +28,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         ) : null}
       </div>
 
-      {/* Project Metadata & Actions Body (Right on desktop) */}
       <div className="lg:w-1/2 p-6 sm:p-8 md:p-9 flex flex-col justify-between h-full space-y-5">
         <div className="space-y-3 sm:space-y-3.5">
           <div>
@@ -47,7 +45,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           </p>
         </div>
 
-        {/* Tech Stack & Direct Action Buttons */}
         <div className="space-y-5 pt-4 border-t border-border/70">
           <div className="flex flex-wrap gap-1.5">
             {project.tags.map((tag) => (
@@ -61,8 +58,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {/* Direct-Access: Live Demo Primary Button */}
-            {project.kind === 'direct-access' && project.liveUrl && (
+            {project.kind === 'direct-access' && (
               <a
                 href={project.liveUrl}
                 target="_blank"
@@ -74,7 +70,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
               </a>
             )}
 
-            {/* Source-Only or Secondary Source Code Button */}
             {project.githubUrl && (
               <a
                 href={project.githubUrl}

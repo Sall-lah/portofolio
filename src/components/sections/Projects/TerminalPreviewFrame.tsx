@@ -1,5 +1,5 @@
 import React from 'react';
-import { TerminalPreview } from '../../types';
+import { TerminalPreview } from '../../../types';
 
 export interface TerminalPreviewFrameProps {
   /** Project title for accessible image/preview context */
@@ -10,7 +10,7 @@ export interface TerminalPreviewFrameProps {
 
 /**
  * Renders a simulated terminal / CLI execution frame for source-only projects.
- * Adheres strictly to zero-zoom on hover to maintain clean readability and a grounded developer aesthetic.
+ * Why: Conveys command-line execution and environment status without animated zoom or distraction.
  *
  * @param props - Project title and terminal preview definition
  * @returns Terminal window mockup JSX element
@@ -26,7 +26,6 @@ export const TerminalPreviewFrame: React.FC<TerminalPreviewFrameProps> = ({ titl
       role="region"
       aria-label={`Terminal execution preview for ${title}`}
     >
-      {/* Top macOS/Terminal Window Bar */}
       <div className="flex items-center justify-between pb-3 border-b border-zinc-800/80">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-[#ff5f56]" />
@@ -38,7 +37,6 @@ export const TerminalPreviewFrame: React.FC<TerminalPreviewFrameProps> = ({ titl
         </span>
       </div>
 
-      {/* Terminal Command & Execution Output Body */}
       <div className="my-auto py-4 space-y-2 overflow-x-auto leading-relaxed">
         <div className="flex items-start gap-2 text-zinc-100 font-semibold">
           <span className="text-primary select-none">{prompt}</span>
@@ -52,7 +50,6 @@ export const TerminalPreviewFrame: React.FC<TerminalPreviewFrameProps> = ({ titl
         ))}
       </div>
 
-      {/* Terminal Footer Indicator */}
       <div className="pt-2 border-t border-zinc-800/60 flex items-center justify-between text-zinc-500 text-[11px]">
         <span>⚡ source-only module</span>
         <span className="text-emerald-400 font-medium">● ready</span>

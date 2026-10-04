@@ -16,8 +16,6 @@ export const projects: Project[] = [
     tags: ['React', 'Vite', 'Tailwind CSS', 'Express', 'Docker', 'Supabase'],
     liveUrl: 'https://fit-life-9173571fa1fb.herokuapp.com/',
     githubUrl: 'https://github.com/nv-hr/Fitness_App',
-    status: 'Completed',
-    featured: true,
   },
   {
     id: 'special-gift',
@@ -30,8 +28,6 @@ export const projects: Project[] = [
     tags: ['React', 'Vite', 'Tailwind CSS', 'Docker', 'Express'],
     liveUrl: 'https://special-gift-ea7251652f65.herokuapp.com/',
     githubUrl: 'https://github.com/Sall-lah/SpecialGift',
-    status: 'Completed',
-    featured: true,
   },
   {
     id: 'clothes-store',
@@ -43,7 +39,5 @@ export const projects: Project[] = [
     screenshot: `${import.meta.env.BASE_URL}project/Store.png`,
     tags: ['Go', 'Redis', 'Kafka', 'Nginx', 'Cloudflare R2'],
     githubUrl: 'https://github.com/Sall-lah/store_gateway',
-    status: 'Completed',
-    featured: true,
   },
 ];

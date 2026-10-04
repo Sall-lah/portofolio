@@ -1,12 +1,15 @@
 import React from 'react';
 import { ArrowDown, ExternalLink, Mail } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from '../ui/Icons';
+import { SectionContainer } from '../ui/SectionContainer';
 import { siteConfig } from '../../data/siteConfig';
+
+const SECONDARY_LINK_CLASS =
+  'inline-flex items-center justify-center gap-2 px-4 py-3 text-[15px] font-medium rounded-md text-brand-text hover:text-primary bg-surface hover:bg-white border border-border transition-colors duration-fast min-h-[44px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary';
 
 /**
  * About section presenting the developer's narrative user story alongside an authentic portrait image.
- * Houses the primary portfolio action and contact channels beneath the narrative.
- * Adheres to DESIGN.md typography and spacing standards in a balanced two-column layout.
+ * Why: Houses the primary editorial background and direct contact channels in a balanced two-column layout.
  *
  * @returns About section JSX element
  */
@@ -16,8 +19,7 @@ export const About: React.FC = () => {
       id="about"
       className="relative min-h-screen flex items-center py-16 sm:py-20 md:py-24 bg-white"
     >
-      <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        {/* Section Heading */}
+      <SectionContainer>
         <div className="mb-10 sm:mb-14">
           <h2 className="text-[28px] sm:text-[34px] md:text-[38px] font-semibold text-primary tracking-[-0.02em] leading-[1.18]">
             About Me
@@ -50,7 +52,7 @@ export const About: React.FC = () => {
                 href={siteConfig.socialLinks.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-4 py-3 text-[15px] font-medium rounded-md text-brand-text hover:text-primary bg-surface hover:bg-white border border-border transition-colors duration-fast min-h-[44px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className={SECONDARY_LINK_CLASS}
               >
                 <GithubIcon size={18} />
                 <span>GitHub</span>
@@ -61,7 +63,7 @@ export const About: React.FC = () => {
                 href={siteConfig.socialLinks.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-4 py-3 text-[15px] font-medium rounded-md text-brand-text hover:text-primary bg-surface hover:bg-white border border-border transition-colors duration-fast min-h-[44px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className={SECONDARY_LINK_CLASS}
               >
                 <LinkedinIcon size={18} />
                 <span>LinkedIn</span>
@@ -70,7 +72,7 @@ export const About: React.FC = () => {
 
               <a
                 href="#contact"
-                className="inline-flex items-center justify-center gap-2 px-4 py-3 text-[15px] font-medium rounded-md text-brand-text hover:text-primary bg-surface hover:bg-white border border-border transition-colors duration-fast min-h-[44px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className={SECONDARY_LINK_CLASS}
               >
                 <Mail className="w-4 h-4 text-primary" />
                 <span>Email</span>
@@ -90,7 +92,7 @@ export const About: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </SectionContainer>
     </section>
   );
 };

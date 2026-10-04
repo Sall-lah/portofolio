@@ -57,7 +57,8 @@ const ICON_MAP: Record<string, string> = {
 };
 
 /**
- * Renders an authentic brand logo SVG loaded from the public/icon folder.
+ * Renders a brand logo SVG loaded from the public/icon folder.
+ * Why: Displays official technology logos alongside skill names without bundling SVGs into the main JS chunk.
  *
  * @param props - Skill name, size override, and HTML image attributes
  * @returns Image element referencing public/icon SVGs

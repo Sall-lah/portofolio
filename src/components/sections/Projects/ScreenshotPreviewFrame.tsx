@@ -8,8 +8,8 @@ export interface ScreenshotPreviewFrameProps {
 }
 
 /**
- * Renders an expansive, static web screenshot preview for direct-access projects.
- * Explicitly omits hover scaling to ensure crisp, distraction-free visual presentation.
+ * Renders a static web screenshot preview for direct-access projects.
+ * Why: Omits hover scaling to ensure crisp, distraction-free visual presentation.
  *
  * @param props - Screenshot URL and project title
  * @returns Web screenshot container JSX element

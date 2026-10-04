@@ -2,7 +2,6 @@ import { SkillCategory } from '../types';
 
 /**
  * Technical skills taxonomy grouped by practical domain.
- * Formatted with pill-badge styling in the UI.
  */
 export const skillCategories: SkillCategory[] = [
   {

@@ -2,10 +2,14 @@ import React from 'react';
 import { ArrowUp, Phone, Mail } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from '../ui/Icons';
 import { siteConfig } from '../../data/siteConfig';
+import { toTelHref } from '../../utils/tel';
+
+const SOCIAL_ICON_BTN_CLASS =
+  'flex items-center justify-center w-10 h-10 rounded-md bg-white/10 text-white hover:bg-primary hover:text-white transition-colors duration-fast focus-visible:outline-2 focus-visible:outline-white';
 
 /**
- * Minimalist footer component stripped of generic AI boilerplate.
- * Focused entirely on direct contact details (Name, Phone, Email) and quick navigation.
+ * Minimalist footer component providing direct contact details and quick navigation.
+ * Why: Keeps essential contact channels accessible without unnecessary footer boilerplate.
  *
  * @returns Minimalist footer JSX element
  */
@@ -18,7 +22,6 @@ export const Footer: React.FC = () => {
     <footer className="bg-brand-dark text-white">
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          {/* Developer identity and direct contact */}
           <div className="space-y-2">
             <div className="text-[18px] font-semibold tracking-tight text-white">
               {siteConfig.name}
@@ -26,7 +29,7 @@ export const Footer: React.FC = () => {
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[14px] text-gray-300 font-mono">
               {siteConfig.phone && (
                 <a
-                  href={`tel:${siteConfig.phone.replace(/\s+/g, '')}`}
+                  href={toTelHref(siteConfig.phone)}
                   className="inline-flex items-center gap-2 hover:text-white transition-colors duration-fast"
                 >
                   <Phone className="w-4 h-4 text-primary" />
@@ -43,14 +46,13 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Social Navigation and Back to Top Trigger */}
           <div className="flex items-center gap-3 self-end md:self-auto">
             <a
               href={siteConfig.socialLinks.github}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Visit GitHub Profile"
-              className="flex items-center justify-center w-10 h-10 rounded-md bg-white/10 text-white hover:bg-primary hover:text-white transition-colors duration-fast focus-visible:outline-2 focus-visible:outline-white"
+              className={SOCIAL_ICON_BTN_CLASS}
             >
               <GithubIcon size={18} />
             </a>
@@ -59,7 +61,7 @@ export const Footer: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Visit LinkedIn Profile"
-              className="flex items-center justify-center w-10 h-10 rounded-md bg-white/10 text-white hover:bg-primary hover:text-white transition-colors duration-fast focus-visible:outline-2 focus-visible:outline-white"
+              className={SOCIAL_ICON_BTN_CLASS}
             >
               <LinkedinIcon size={18} />
             </a>

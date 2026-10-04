@@ -10,12 +10,6 @@
 export type ProjectKind = 'direct-access' | 'source-only';
 
 /**
- * Represents the lifecycle status of a software project.
- * Used for status badges with corresponding semantic colors.
- */
-export type ProjectStatus = 'Active' | 'In Progress' | 'Completed';
-
-/**
  * Data structure representing a simulated terminal/CLI snippet for source-only projects.
  */
 export interface TerminalPreview {
@@ -41,10 +35,6 @@ export interface BaseProject {
   description: string;
   /** Monospace technology tags associated with the project (e.g. React, TypeScript) */
   tags: string[];
-  /** Current development lifecycle status */
-  status: ProjectStatus;
-  /** Flag indicating if this project is featured prominently */
-  featured?: boolean;
 }
 
 /**
@@ -89,39 +79,19 @@ export interface SkillCategory {
 }
 
 /**
- * Interface representing developer social navigation links.
- */
-export interface SocialLink {
-  /** Platform name (e.g. "GitHub", "LinkedIn", "Email") */
-  label: string;
-  /** Target link URI */
-  url: string;
-  /** Accessible label description */
-  ariaLabel: string;
-}
-
-/**
  * Global site metadata and personal profile configuration.
  */
 export interface SiteConfig {
   /** Developer full name */
   name: string;
-  /** Professional title / role */
-  role: string;
   /** Core driving motivation statement prominently displayed in hero */
   motivation: string;
-  /** Hero headline (legacy fallback / concise value proposition) */
-  headline: string;
-  /** Concise developer summary */
-  bio: string;
   /** Structured multi-paragraph narrative for the dedicated About story */
   aboutStory: string[];
   /** Contact email */
   email: string;
   /** Contact phone number */
   phone?: string;
-  /** Geographic location */
-  location: string;
   /** External profile links */
   socialLinks: {
     github: string;

@@ -3,7 +3,7 @@ import {
   calculateWakeInfluence,
   getTrailBoundingBox,
   TrailPoint,
-} from '../../utils/wakeTrail';
+} from './wakeTrail';
 
 /**
  * Cipher symbols used for the continuous live decryption stream.
@@ -117,25 +117,12 @@ export interface CyberTrailCanvasProps {
 }
 
 /**
- * High-performance HTML5 Canvas component that renders a monospace dot matrix (`·`)
- * across the hero background, transforming dots into an organic, motion-driven water wake
- * that hugs cursor trajectory when moving and gently dissolves to still dots when stationary.
- * Non-accent cipher glyphs are rendered in slate tones that stay noticeably lighter than the
- * foreground text (#1a1a1a) to preserve paragraph legibility while passing behind it.
+ * High-performance HTML5 Canvas component rendering a monospace dot matrix (`·`)
+ * that transforms into an organic water wake trailing pointer movements.
+ * Why: Non-accent cipher glyphs use slate tones lighter than foreground text (#1a1a1a) to preserve
+ * text readability, while bounding-box spatial pruning and a self-sleeping RAF loop ensure 0% idle CPU.
  *
- * Why:
- * 1. Motion-Driven Water Wake: Cells activate based on movement trajectory and velocity,
- *    simulating fluid displacement that trails behind the cursor.
- * 2. Gentle Idle Dissolution: When the cursor pauses or stops moving, existing disturbances
- *    smoothly evaporate over ~800ms back into the calm dot matrix.
- * 3. Two-Level Color Separation: Center wake glyphs use slate-600 (WAKE_CENTER_RGB) and outer glyphs
- *    use slate-500 (WAKE_OUTER_RGB), ensuring the hero motivation text remains the darkest ink in the section.
- * 4. 180px Proximity Radius: Reduced from 260px to provide a balanced, focused field of view.
- * 5. Bounding-box spatial pruning limits per-frame calculations to cells within the active wake path.
- * 6. Self-sleeping RAF loop pauses automatically when all disturbances settle, maintaining 0% idle CPU.
- * 7. Respects prefers-reduced-motion by rendering a peaceful static dot matrix.
- *
- * @param props Component properties containing optional containerRef and className
+ * @param props - Component properties containing optional containerRef and className
  * @returns Absolute-positioned HTML5 canvas JSX element
  */
 export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
@@ -258,6 +245,7 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
 
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
+      ctx.font = '600 13px "JetBrains Mono", "Fira Code", monospace';
 
       // Compute spatial bounding box for the active wake
       const bbox = getTrailBoundingBox(
@@ -332,32 +320,13 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
 
           // Render cell based on reveal progress
           if (cell.revealProgress > 0.02 && cell.displayChar !== ' ') {
-            // In wake: Render scrambling cipher character
-            ctx.font = '600 13px "JetBrains Mono", "Fira Code", monospace';
-
             // Scale opacity smoothly from BASE_DOT_OPACITY at perimeter up to 1.0 at center
             const animOpacity = BASE_DOT_OPACITY + (1 - BASE_DOT_OPACITY) * cell.revealProgress;
-
-            if (dist < 60) {
-              // Center zone: Slate-600 cipher glyphs with natural ramped opacity (no ×1.1 boost to avoid competing with text)
-              if (cell.isAccent) {
-                ctx.fillStyle = `rgba(${ACCENT_RGB}, ${animOpacity})`;
-              } else {
-                ctx.fillStyle = `rgba(${WAKE_CENTER_RGB}, ${animOpacity})`;
-              }
-            } else {
-              // Mid/outer wake zone: Slate-500 fading smoothly toward perimeter minimum
-              if (cell.isAccent) {
-                ctx.fillStyle = `rgba(${ACCENT_RGB}, ${animOpacity})`;
-              } else {
-                ctx.fillStyle = `rgba(${WAKE_OUTER_RGB}, ${animOpacity})`;
-              }
-            }
-
+            const rgb = cell.isAccent ? ACCENT_RGB : dist < 60 ? WAKE_CENTER_RGB : WAKE_OUTER_RGB;
+            ctx.fillStyle = `rgba(${rgb}, ${animOpacity})`;
             ctx.fillText(cell.displayChar, x, y);
           } else {
             // Default baseline: Monospace dot
-            ctx.font = '600 13px "JetBrains Mono", "Fira Code", monospace';
             ctx.fillStyle = IDLE_DOT_COLOR;
             ctx.fillText('·', x, y);
           }

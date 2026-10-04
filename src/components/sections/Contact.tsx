@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
 import { Mail, Phone, Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { SectionContainer } from '../ui/SectionContainer';
+import { SectionHeading } from '../ui/SectionHeading';
 import { siteConfig } from '../../data/siteConfig';
 import { ContactFormData } from '../../types';
+import { toTelHref } from '../../utils/tel';
+
+const INFO_ICON_BOX_CLASS =
+  'w-10 h-10 rounded-md bg-surface border border-border flex items-center justify-center text-primary shrink-0';
+const LABEL_CLASS = 'block text-[14px] font-medium text-brand-text';
+const INPUT_CLASS =
+  'w-full px-4 py-2.5 text-[15px] bg-white border border-border rounded-md text-brand-text placeholder:text-brand-muted/70 transition-all duration-fast focus-visible:outline-2 focus-visible:outline-primary';
 
 /**
  * Contact section featuring an accessible message form and direct contact info.
- * Dispatches inquiries directly to the developer inbox via Web3Forms API.
+ * Why: Dispatches inquiries directly to the developer inbox via Web3Forms with email and phone fallbacks.
  *
  * @returns Contact section JSX element
  */
@@ -94,14 +103,11 @@ export const Contact: React.FC = () => {
 
   return (
     <section id="contact" className="min-h-screen py-16 md:py-24 bg-surface/30 flex flex-col justify-center">
-      <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <SectionContainer>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          {/* Contact Introduction Column */}
           <div className="lg:col-span-5 space-y-6">
             <div>
-              <h2 className="text-[30px] sm:text-[36px] font-bold text-primary tracking-[-0.02em]">
-                Contact
-              </h2>
+              <SectionHeading>Contact</SectionHeading>
             </div>
 
             <p className="text-[16px] text-brand-muted leading-[1.65]">
@@ -111,13 +117,13 @@ export const Contact: React.FC = () => {
             <div className="space-y-4 pt-4 border-t border-border">
               {siteConfig.phone && (
                 <div className="flex items-center gap-3 text-[15px] text-brand-text">
-                  <div className="w-10 h-10 rounded-md bg-surface border border-border flex items-center justify-center text-primary shrink-0">
+                  <div className={INFO_ICON_BOX_CLASS}>
                     <Phone className="w-4 h-4" />
                   </div>
                   <div>
                     <div className="text-[12px] font-mono uppercase text-brand-muted">Phone / WhatsApp</div>
                     <a
-                      href={`tel:${siteConfig.phone.replace(/\s+/g, '')}`}
+                      href={toTelHref(siteConfig.phone)}
                       className="font-medium hover:text-primary transition-colors duration-fast"
                     >
                       {siteConfig.phone}
@@ -127,7 +133,7 @@ export const Contact: React.FC = () => {
               )}
 
               <div className="flex items-center gap-3 text-[15px] text-brand-text">
-                <div className="w-10 h-10 rounded-md bg-surface border border-border flex items-center justify-center text-primary shrink-0">
+                <div className={INFO_ICON_BOX_CLASS}>
                   <Mail className="w-4 h-4" />
                 </div>
                 <div>
@@ -143,11 +149,9 @@ export const Contact: React.FC = () => {
             </div>
           </div>
 
-          {/* Contact Form Column */}
           <div className="lg:col-span-7">
             <div className="bg-white rounded-xl p-6 sm:p-8 border border-border shadow-card">
               <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-                {/* Status Banners */}
                 {status === 'success' && (
                   <div
                     role="alert"
@@ -189,11 +193,10 @@ export const Contact: React.FC = () => {
                   autoComplete="off"
                 />
 
-                {/* Name Input */}
                 <div className="space-y-1.5">
                   <label
                     htmlFor="contact-name"
-                    className="block text-[14px] font-medium text-brand-text"
+                    className={LABEL_CLASS}
                   >
                     Your Name <span className="text-primary">*</span>
                   </label>
@@ -205,15 +208,14 @@ export const Contact: React.FC = () => {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="e.g. Sarah Connor"
-                    className="w-full px-4 py-2.5 text-[15px] bg-white border border-border rounded-md text-brand-text placeholder:text-brand-muted/70 transition-all duration-fast focus-visible:outline-2 focus-visible:outline-primary"
+                    className={INPUT_CLASS}
                   />
                 </div>
 
-                {/* Email Input */}
                 <div className="space-y-1.5">
                   <label
                     htmlFor="contact-email"
-                    className="block text-[14px] font-medium text-brand-text"
+                    className={LABEL_CLASS}
                   >
                     Email Address <span className="text-primary">*</span>
                   </label>
@@ -225,15 +227,14 @@ export const Contact: React.FC = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="e.g. sarah@company.com"
-                    className="w-full px-4 py-2.5 text-[15px] bg-white border border-border rounded-md text-brand-text placeholder:text-brand-muted/70 transition-all duration-fast focus-visible:outline-2 focus-visible:outline-primary"
+                    className={INPUT_CLASS}
                   />
                 </div>
 
-                {/* Message Input */}
                 <div className="space-y-1.5">
                   <label
                     htmlFor="contact-message"
-                    className="block text-[14px] font-medium text-brand-text"
+                    className={LABEL_CLASS}
                   >
                     Message <span className="text-primary">*</span>
                   </label>
@@ -245,11 +246,10 @@ export const Contact: React.FC = () => {
                     value={formData.message}
                     onChange={handleChange}
                     placeholder="Tell me about the role, project, or collaboration..."
-                    className="w-full px-4 py-2.5 text-[15px] bg-white border border-border rounded-md text-brand-text placeholder:text-brand-muted/70 transition-all duration-fast focus-visible:outline-2 focus-visible:outline-primary resize-y"
+                    className={`${INPUT_CLASS} resize-y`}
                   />
                 </div>
 
-                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={status === 'submitting'}
@@ -271,7 +271,7 @@ export const Contact: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </SectionContainer>
     </section>
   );
 };

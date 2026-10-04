@@ -1,14 +1,14 @@
 import React from 'react';
 import { Footer } from './components/layout/Footer';
-import { Hero } from './components/sections/Hero';
+import { Hero } from './components/sections/Hero/Hero';
 import { About } from './components/sections/About';
-import { Projects } from './components/sections/Projects';
+import { Projects } from './components/sections/Projects/Projects';
 import { Skills } from './components/sections/Skills';
 import { Contact } from './components/sections/Contact';
 
 /**
  * Main application component assembling the single-page developer portfolio.
- * Includes skip-to-content accessibility navigation and clean section landmarks.
+ * Why: Assembles section landmarks with a skip-to-content link for keyboard and screen-reader accessibility.
  *
  * @returns Complete Portfolio single-page layout
  */
@@ -23,7 +23,6 @@ export const App: React.FC = () => {
         Skip to Main Content
       </a>
 
-      {/* Main Page Content Landmark */}
       <main id="main-content" className="flex-grow">
         <Hero />
         <About />
@@ -32,7 +31,6 @@ export const App: React.FC = () => {
         <Contact />
       </main>
 
-      {/* Dark Footer */}
       <Footer />
     </div>
   );
