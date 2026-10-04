@@ -62,6 +62,33 @@ const BASE_DOT_OPACITY = 0.52;
 const IDLE_DOT_COLOR = `rgba(100, 116, 139, ${BASE_DOT_OPACITY})`;
 
 /**
+ * RGB triplet for center-zone wake cipher glyphs (slate-600).
+ *
+ * Why:
+ * Keeps the center wake visibly lighter than the foreground motivation text (#1a1a1a, brand-text),
+ * preventing letters from camouflaging into the background effect while maintaining sufficient contrast against pure white.
+ */
+const WAKE_CENTER_RGB = '71, 85, 105';
+
+/**
+ * RGB triplet for mid/outer wake cipher glyphs (slate-500).
+ *
+ * Why:
+ * Matches the hue and tone of the idle dot matrix, ensuring a seamless visual transition
+ * at the wake perimeter with zero brightness drop or edge pop as cells activate and dissolve.
+ */
+const WAKE_OUTER_RGB = '100, 116, 139';
+
+/**
+ * RGB triplet for brand red wake accent glyphs.
+ *
+ * Why:
+ * Provides occasional high-energy brand glitch highlights that contrast with dark text by hue,
+ * preserving signature cyber aesthetics without interfering with paragraph legibility.
+ */
+const ACCENT_RGB = '226, 24, 24';
+
+/**
  * State tracked per individual grid cell for continuous live cipher scrambling.
  */
 interface CellState {
@@ -93,16 +120,20 @@ export interface CyberTrailCanvasProps {
  * High-performance HTML5 Canvas component that renders a monospace dot matrix (`·`)
  * across the hero background, transforming dots into an organic, motion-driven water wake
  * that hugs cursor trajectory when moving and gently dissolves to still dots when stationary.
+ * Non-accent cipher glyphs are rendered in slate tones that stay noticeably lighter than the
+ * foreground text (#1a1a1a) to preserve paragraph legibility while passing behind it.
  *
  * Why:
  * 1. Motion-Driven Water Wake: Cells activate based on movement trajectory and velocity,
  *    simulating fluid displacement that trails behind the cursor.
  * 2. Gentle Idle Dissolution: When the cursor pauses or stops moving, existing disturbances
  *    smoothly evaporate over ~800ms back into the calm dot matrix.
- * 3. 180px Proximity Radius: Reduced from 260px to provide a balanced, focused field of view.
- * 4. Bounding-box spatial pruning limits per-frame calculations to cells within the active wake path.
- * 5. Self-sleeping RAF loop pauses automatically when all disturbances settle, maintaining 0% idle CPU.
- * 6. Respects prefers-reduced-motion by rendering a peaceful static dot matrix.
+ * 3. Two-Level Color Separation: Center wake glyphs use slate-600 (WAKE_CENTER_RGB) and outer glyphs
+ *    use slate-500 (WAKE_OUTER_RGB), ensuring the hero motivation text remains the darkest ink in the section.
+ * 4. 180px Proximity Radius: Reduced from 260px to provide a balanced, focused field of view.
+ * 5. Bounding-box spatial pruning limits per-frame calculations to cells within the active wake path.
+ * 6. Self-sleeping RAF loop pauses automatically when all disturbances settle, maintaining 0% idle CPU.
+ * 7. Respects prefers-reduced-motion by rendering a peaceful static dot matrix.
  *
  * @param props Component properties containing optional containerRef and className
  * @returns Absolute-positioned HTML5 canvas JSX element
@@ -308,18 +339,18 @@ export const CyberTrailCanvas: React.FC<CyberTrailCanvasProps> = ({
             const animOpacity = BASE_DOT_OPACITY + (1 - BASE_DOT_OPACITY) * cell.revealProgress;
 
             if (dist < 60) {
-              // Center zone: High contrast charcoal with occasional brand red
+              // Center zone: Slate-600 cipher glyphs with natural ramped opacity (no ×1.1 boost to avoid competing with text)
               if (cell.isAccent) {
-                ctx.fillStyle = `rgba(226, 24, 24, ${Math.min(1, animOpacity * 1.1)})`;
+                ctx.fillStyle = `rgba(${ACCENT_RGB}, ${animOpacity})`;
               } else {
-                ctx.fillStyle = `rgba(26, 26, 26, ${Math.min(1, animOpacity * 1.1)})`;
+                ctx.fillStyle = `rgba(${WAKE_CENTER_RGB}, ${animOpacity})`;
               }
             } else {
-              // Mid/outer wake zone: Refined slate fading smoothly toward perimeter minimum
+              // Mid/outer wake zone: Slate-500 fading smoothly toward perimeter minimum
               if (cell.isAccent) {
-                ctx.fillStyle = `rgba(226, 24, 24, ${animOpacity})`;
+                ctx.fillStyle = `rgba(${ACCENT_RGB}, ${animOpacity})`;
               } else {
-                ctx.fillStyle = `rgba(51, 65, 85, ${animOpacity})`;
+                ctx.fillStyle = `rgba(${WAKE_OUTER_RGB}, ${animOpacity})`;
               }
             }
 

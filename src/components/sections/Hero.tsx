@@ -13,6 +13,8 @@ import { CyberTrailCanvas } from '../ui/CyberTrailCanvas';
  * 2. Scoping the pointer tracking ref directly to the hero section prevents canvas interaction from
  *    spilling into narrative sections.
  * 3. Layering the content above the canvas (z-10 over z-0) ensures accessibility and text selection.
+ * 4. A soft white text halo (`text-halo-light`) on the motivation statement keeps its letterforms
+ *    crisp and legible even when high-density dark cipher glyphs scramble directly beneath it.
  *
  * @returns Centered Hero section JSX element
  */
@@ -37,7 +39,7 @@ export const Hero: React.FC = () => {
           </h1>
 
           {/* High-impact personal motivation statement with enhanced fidelity, contrast and legibility */}
-          <p className="text-[18px] sm:text-[21px] md:text-[24px] text-brand-text leading-[1.6] font-medium pt-1 max-w-2xl mx-auto text-center">
+          <p className="text-[18px] sm:text-[21px] md:text-[24px] text-brand-text leading-[1.6] font-medium pt-1 max-w-2xl mx-auto text-center text-halo-light">
             {siteConfig.motivation}
           </p>
         </div>

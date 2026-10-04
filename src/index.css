@@ -68,6 +68,17 @@
       -webkit-text-stroke: 3px #e21818;
     }
   }
+
+  /*
+   * Soft white text halo for Hero motivation text.
+   * Why: Prevents dark paragraph letterforms (#1a1a1a) from camouflaging into dynamic canvas cipher
+   * wake glyphs passing directly behind it, complementing the wake's lighter slate tones without altering font color, weight, or layout.
+   */
+  .text-halo-light {
+    text-shadow:
+      0 0 2px #ffffff,
+      0 0 8px rgba(255, 255, 255, 0.85);
+  }
 }
 
 

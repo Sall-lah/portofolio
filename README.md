@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ Ikhsan Ibnu Abdullah — Personal Portfolio
+# Ikhsan Ibnu Abdullah — Personal Portfolio
 
 This repository contains the source code for my personal portfolio website, built to showcase my software engineering projects, technical skillset, and background.
 
